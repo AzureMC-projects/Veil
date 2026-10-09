@@ -1,0 +1,42 @@
+name: Build Veil
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm install
+      - name: Check JavaScript syntax
+        run: |
+          node --check main.js
+          node --check preload.js
+      - name: Package Veil
+        run: npm run dist
+      - name: Upload installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: veil-${{ matrix.os }}
+          path: release/*
+          if-no-files-found: error
+          retention-days: 14
