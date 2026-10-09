@@ -96,6 +96,7 @@ function createTab(url = 'https://duckduckgo.com/') {
   tabs.push(tab);
   win.addBrowserView(view);
   activeTabId = tab.id;
+  view.webContents.on('will-navigate', (event, target) => { try { const protocol = new URL(target).protocol; if (!['https:', 'http:'].includes(protocol)) event.preventDefault(); } catch { event.preventDefault(); } });
   view.webContents.setWindowOpenHandler(({ url: target }) => {
     createTab(target);
     return { action: 'deny' };
