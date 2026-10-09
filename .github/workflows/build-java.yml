@@ -10,7 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  compile:
+  package:
+    name: Package on ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -23,5 +24,20 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Compile Java desktop app
+      - name: Build Java app
         run: mvn --batch-mode --no-transfer-progress clean package
+      - name: Stage application and dependencies
+        shell: bash
+        run: |
+          mkdir -p target/app
+          cp target/veil-browser-1.0.0.jar target/app/veil-browser.jar
+          mvn --batch-mode --no-transfer-progress dependency:copy-dependencies -DoutputDirectory=target/app/lib
+      - name: Create native app image
+        run: jpackage --type app-image --name Veil --input target/app --main-jar veil-browser.jar --main-class app.veil.VeilBrowser --dest target/packages
+      - name: Upload desktop app
+        uses: actions/upload-artifact@v4
+        with:
+          name: Veil-${{ runner.os }}
+          path: target/packages/Veil/
+          if-no-files-found: error
+          retention-days: 14
