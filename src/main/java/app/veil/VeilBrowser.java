@@ -77,7 +77,6 @@ public final class VeilBrowser extends Application {
 
         Scene scene = new Scene(root, 1380, 880);
         scene.setFill(Color.web(BG));
-        scene.getStylesheets().add("data:text/css," + css().replace("#", "%23").replace(" ", "%20").replace("\n", ""));
         stage.setTitle("Veil Browser");
         stage.setMinWidth(760);
         stage.setMinHeight(560);
