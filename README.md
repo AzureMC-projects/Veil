@@ -1,51 +1,37 @@
 # Veil Browser
 
-**A privacy-focused desktop browser. No C++ application code.**
+Veil is being built as a **standalone Java desktop application**. It is not a website pretending to be a browser; the browser interface runs in its own desktop window.
 
-Veil is an Electron desktop browser built with JavaScript, HTML, and CSS. Electron includes Chromium so Veil opens real websites in browser views rather than simulating a browser in a webpage.
+## Technology
+- Java 21
+- JavaFX WebView (WebKit browser engine)
+- Maven
 
-## Features in v1
+No C++ source code is written for Veil. JavaFX and its browser engine include native platform components as part of their runtime.
 
-- Desktop window with tabs, address/search bar, back, forward, reload, and keyboard shortcuts.
-- DuckDuckGo search when text is entered instead of a web address.
-- Built-in blocking for requests to a curated set of known tracking and advertising hosts.
-- Optional Do Not Track request header.
-- Optional removal of `Set-Cookie` response headers from embedded/subresource requests.
-- Location, camera, microphone, and notification permissions denied by default.
-- Clear browsing cookies, site storage, and cache from Privacy settings.
-- Secure renderer defaults: context isolation, sandboxing, no Node integration in page content, and web security enabled.
-- GitHub Actions workflow to package Windows, macOS, and Linux builds.
-
-## Run from source
-
-Install Node.js 22 or newer, then run:
+## Run Veil
+Install **JDK 21** and **Maven 3.9+**, then run from the repository root:
 
 ```sh
-npm install
-npm start
+mvn clean javafx:run
 ```
 
-## Build an installer
+Veil opens a desktop window. Enter a web address such as `example.com`, or type a search such as `how does DNS work` and press Enter. Searches are sent to DuckDuckGo.
 
+## Build
 ```sh
-npm run dist
+mvn clean package
 ```
 
-Platform-specific builds are also available with `npm run dist:win`, `npm run dist:mac`, and `npm run dist:linux`. Build output is written to `release/`. GitHub Actions builds on Windows, macOS, and Linux and uploads installers as workflow artifacts.
+A GitHub Actions workflow compiles the Java app on Windows, macOS, and Linux. It currently checks compilation; it does not yet publish a signed, self-contained installer. JavaFX WebView uses WebKit and may not support every feature used by modern websites.
 
-## Privacy scope and limitations
+## Current scope and privacy
+The app includes tabs, address/search navigation, back/forward, reload, keyboard shortcuts, and a privacy-information dialog. This JavaFX version does **not** yet implement comprehensive network-level tracker blocking, anti-fingerprinting, or per-site permission management. Do not treat it as an anonymity tool.
 
-Veil v1 is not a claim of perfect anonymity. Its tracker blocklist is built in and is not automatically updated; it cannot block every tracker. The subresource cookie control removes cookie-setting response headers for non-main-frame requests, which can break some sites and is not equivalent to Chromium's full third-party-cookie partitioning. Do Not Track is advisory and websites may ignore it. Site permissions are denied by default and there is no per-site permission allowlist yet. Browser fingerprinting, IP address visibility, malicious websites, and all tracking techniques are not fully prevented.
-
-Electron/Chromium contains native components, but this repository contains no C++ source authored for Veil. Keep Electron updated to receive upstream security fixes.
-
-## Project structure
-
-- `main.js` — desktop window, tabs, request filtering, permission defaults, and browser controls.
-- `preload.js` — isolated bridge between the interface and Electron.
-- `index.html` — browser toolbar, tab strip, and privacy settings.
-- `.github/workflows/build.yml` — cross-platform packaging workflow.
+## Source
+- `src/main/java/app/veil/VeilBrowser.java` — desktop app, tabs, navigation and UI.
+- `pom.xml` — Java and JavaFX dependencies.
+- `.github/workflows/build-java.yml` — cross-platform compilation check.
 
 ## License
-
 MIT
