@@ -72,8 +72,11 @@ function layoutViews() {
   if (!win || win.isDestroyed()) return;
   const { width, height } = win.getContentBounds();
   for (const tab of tabs) {
-    tab.view.setBounds({ x: 0, y: CHROME_HEIGHT, width: Math.max(0, width), height: Math.max(0, height - CHROME_HEIGHT) });
-    tab.view.setAutoResize({ width: true, height: true });
+    const active = tab.id === activeTabId;
+    tab.view.setBounds(active
+      ? { x: 0, y: CHROME_HEIGHT, width: Math.max(0, width), height: Math.max(0, height - CHROME_HEIGHT) }
+      : { x: -10000, y: -10000, width: 1, height: 1 });
+    tab.view.setAutoResize(active ? { width: true, height: true } : { width: false, height: false });
   }
 }
 
