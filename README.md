@@ -1,41 +1,51 @@
-# Veil
+# Veil Browser
 
-**Privacy, made clear.**
+**A privacy-focused desktop browser. No C++ application code.**
 
-Veil is a polished, responsive front-end concept for a privacy-first browser. It makes privacy easier to understand with a clear dashboard, plain-language tracker explanations, site permission controls, and separate personal and anonymous session modes.
+Veil is an Electron desktop browser built with JavaScript, HTML, and CSS. Electron includes Chromium so Veil opens real websites in browser views rather than simulating a browser in a webpage.
 
-## Preview
+## Features in v1
 
-Open [index.html](./index.html) in any modern browser. No build step, package manager, framework, or C++ required.
+- Desktop window with tabs, address/search bar, back, forward, reload, and keyboard shortcuts.
+- DuckDuckGo search when text is entered instead of a web address.
+- Built-in blocking for requests to a curated set of known tracking and advertising hosts.
+- Optional Do Not Track request header.
+- Optional removal of `Set-Cookie` response headers from embedded/subresource requests.
+- Location, camera, microphone, and notification permissions denied by default.
+- Clear browsing cookies, site storage, and cache from Privacy settings.
+- Secure renderer defaults: context isolation, sandboxing, no Node integration in page content, and web security enabled.
+- GitHub Actions workflow to package Windows, macOS, and Linux builds.
 
-## Features
+## Run from source
 
-- **Privacy overview** with a visual score and tracker/cookie/data-request summaries.
-- **Readable tracker explanations** that explain what tracking can mean in everyday language.
-- **Permission controls** for location, camera, and microphone in the interactive demo.
-- **Personal and anonymous session selector** to preview separate browsing modes.
-- **Responsive interface** designed for desktop and mobile screens.
-- **Accessible interactions** with keyboard-friendly controls and status announcements.
+Install Node.js 22 or newer, then run:
 
-## Run locally
+```sh
+npm install
+npm start
+```
 
-1. Download or clone this repository.
-2. Open `index.html` in your browser.
+## Build an installer
 
-For a local static server, you can also run `python -m http.server 8000` from the project folder and visit `http://localhost:8000`.
+```sh
+npm run dist
+```
 
-## Important scope note
+Platform-specific builds are also available with `npm run dist:win`, `npm run dist:mac`, and `npm run dist:linux`. Build output is written to `release/`. GitHub Actions builds on Windows, macOS, and Linux and uploads installers as workflow artifacts.
 
-This repository currently contains a **front-end demonstration**, not a functioning browser engine or a real privacy protection service. The displayed scan numbers are illustrative; the demo does not inspect live network traffic, block real trackers, enforce operating-system permissions, or isolate browser storage between sessions. Those capabilities require a browser platform/runtime integration and security testing before being presented as real protections.
+## Privacy scope and limitations
 
-## Technology
+Veil v1 is not a claim of perfect anonymity. Its tracker blocklist is built in and is not automatically updated; it cannot block every tracker. The subresource cookie control removes cookie-setting response headers for non-main-frame requests, which can break some sites and is not equivalent to Chromium's full third-party-cookie partitioning. Do Not Track is advisory and websites may ignore it. Site permissions are denied by default and there is no per-site permission allowlist yet. Browser fingerprinting, IP address visibility, malicious websites, and all tracking techniques are not fully prevented.
 
-- HTML
-- CSS
-- Vanilla JavaScript
+Electron/Chromium contains native components, but this repository contains no C++ source authored for Veil. Keep Electron updated to receive upstream security fixes.
 
-No C++ and no external runtime dependencies.
+## Project structure
 
-## Product principle
+- `main.js` — desktop window, tabs, request filtering, permission defaults, and browser controls.
+- `preload.js` — isolated bridge between the interface and Electron.
+- `index.html` — browser toolbar, tab strip, and privacy settings.
+- `.github/workflows/build.yml` — cross-platform packaging workflow.
 
-Privacy should be understandable, visible, and under the user's control.
+## License
+
+MIT
