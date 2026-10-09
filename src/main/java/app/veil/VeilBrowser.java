@@ -192,7 +192,7 @@ public final class VeilBrowser extends Application {
         BrowserTab t = current();
         if (t == null) return;
         syncingAddress = true; address.setText(t.engine.getLocation() == null ? "" : t.engine.getLocation()); syncingAddress = false;
-        backButton.setDisable(!t.engine.isHistoryBack()); forwardButton.setDisable(!t.engine.isHistoryForward());
+        backButton.setDisable(t.engine.getHistory().getCurrentIndex() <= 0); forwardButton.setDisable(t.engine.getHistory().getCurrentIndex() >= t.engine.getHistory().getEntries().size() - 1);
         stage.setTitle((t.engine.getTitle() == null || t.engine.getTitle().isBlank() ? "New tab" : t.engine.getTitle()) + " — Veil");
     }
 
@@ -220,8 +220,8 @@ public final class VeilBrowser extends Application {
         address.getParent().requestFocus();
     }
 
-    private void goBack() { BrowserTab t = current(); if (t != null && t.engine.isHistoryBack()) t.engine.getHistory().go(-1); syncCurrent(); }
-    private void goForward() { BrowserTab t = current(); if (t != null && t.engine.isHistoryForward()) t.engine.getHistory().go(1); syncCurrent(); }
+    private void goBack() { BrowserTab t = current(); if (t != null && t.engine.getHistory().getCurrentIndex() > 0) t.engine.getHistory().go(-1); syncCurrent(); }
+    private void goForward() { BrowserTab t = current(); if (t != null && t.engine.getHistory().getCurrentIndex() < t.engine.getHistory().getEntries().size() - 1) t.engine.getHistory().go(1); syncCurrent(); }
     private void closeCurrentTab() { BrowserTab t = current(); if (t != null) tabPane.getTabs().remove(t.tab); }
 
     private void showPrivacy() {
